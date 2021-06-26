@@ -3,7 +3,13 @@ _build
 *.native
 *.docdir
 *.html
-man/
 *.install
 .merlin
 node_modules
+*.install
+.merlin
+_build
+_opam
+*.bs.js
+.bsb.lock
+lib/bs
