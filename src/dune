@@ -1,16 +1,19 @@
 (rule
-  (targets flambda.flags)
-  (deps (file mkflags.ml))
-  (mode fallback)
-  (action (run ocaml ./mkflags.ml)))
+ (targets flambda.flags)
+ (deps
+  (file mkflags.ml))
+ (mode fallback)
+ (action
+  (run ocaml ./mkflags.ml)))
 
 (library
-  (name oseq)
-  (public_name oseq)
-  (wrapped false)
-  (modules OSeq)
-  (flags :standard -safe-string -nolabels -warn-error -a+8)
-  (ocamlopt_flags :standard (:include flambda.flags))
-  ;(inline_tests (backend qtest.lib) (libraries containers))
-  (libraries seq))
-
+ (name oseq)
+ (public_name oseq)
+ (wrapped false)
+ (modules OSeq)
+ (flags :standard -safe-string -nolabels -warn-error -a+8)
+ (ocamlopt_flags
+  :standard
+  (:include flambda.flags))
+ ;(inline_tests (backend qtest.lib) (libraries containers))
+ (libraries seq))
