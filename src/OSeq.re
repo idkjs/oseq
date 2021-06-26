@@ -1362,10 +1362,9 @@ let sort = (~cmp, l) => {
   let l = to_list(l);
   of_list(List.sort(cmp, l));
 };
-
 let sort_uniq = (~cmp, l) => {
   let l = to_list(l);
-  uniq((x, y) => cmp(x, y) == 0, of_list(List.sort(cmp, l)));
+  uniq(~eq=(x, y) => cmp(x, y) == 0, of_list(List.sort(cmp, l)));
 };
 
 let lines = (g): t(_) => {
