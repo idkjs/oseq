@@ -1,0 +1,16 @@
+rescript = 1
+rule cp
+  command = cp $i $out
+rule touch
+ command = touch $out
+o Seq.cmi : cp ../bs/src-bs/Seq.cmi
+o Seq.cmj : cp ../bs/src-bs/Seq.cmj
+o Seq.cmt : cp ../bs/src-bs/Seq.cmt
+o Seq.re : cp ../../src-bs/Seq.re
+o OSeq.cmi : cp ../bs/src/OSeq.cmi
+o OSeq.cmj : cp ../bs/src/OSeq.cmj
+o OSeq.cmt : cp ../bs/src/OSeq.cmt
+o OSeq.re : cp ../../src/OSeq.re
+o OSeq.rei : cp ../../src/OSeq.rei
+o OSeq.cmti : cp ../bs/src/OSeq.cmti
+build install.stamp : touch Seq.cmi Seq.cmj OSeq.cmi OSeq.cmj 

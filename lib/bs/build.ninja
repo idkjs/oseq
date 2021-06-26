@@ -1,0 +1,37 @@
+rescript = 1
+g_finger := /Users/mando/Github/oseq/node_modules/@glennsl/bs-jest/lib/ocaml/install.stamp
+rule astj
+  command = /Users/mando/Github/oseq/node_modules/bs-platform/darwin/bsc.exe  -warn-error +101 -bs-v 9.0.2  -absname -bs-ast -o $out $i
+o __tests__/OSeqTests.ast : astj ../../__tests__/OSeqTests.re
+rule deps_dev
+  command = /Users/mando/Github/oseq/node_modules/bs-platform/darwin/bsb_helper.exe -g -hash 1c860570b1150354dc576d3c60b1aeb3 $in
+  restat = 1
+o __tests__/OSeqTests.d : deps_dev __tests__/OSeqTests.ast
+rule mij_dev
+  command = /Users/mando/Github/oseq/node_modules/bs-platform/darwin/bsc.exe -I __tests__ -I src -I src-bs -I /Users/mando/Github/oseq/node_modules/@glennsl/bs-jest/lib/ocaml   -warn-error +101 -bs-package-name reason-oseq -bs-package-output commonjs:$in_d:.bs.js -bs-v $g_finger $i
+  dyndep = 1
+  restat = 1
+o __tests__/OSeqTests.cmj __tests__/OSeqTests.cmi ../../__tests__/OSeqTests.bs.js : mij_dev __tests__/OSeqTests.ast
+o src-bs/Seq.ast : astj ../../src-bs/Seq.re
+rule deps
+  command = /Users/mando/Github/oseq/node_modules/bs-platform/darwin/bsb_helper.exe -hash 1c860570b1150354dc576d3c60b1aeb3 $in
+  restat = 1
+o src-bs/Seq.d : deps src-bs/Seq.ast
+rule mij
+  command = /Users/mando/Github/oseq/node_modules/bs-platform/darwin/bsc.exe -I src -I src-bs   -warn-error +101 -bs-package-name reason-oseq -bs-package-output commonjs:$in_d:.bs.js -bs-v $g_finger $i
+  dyndep = 1
+  restat = 1
+o src-bs/Seq.cmj src-bs/Seq.cmi ../../src-bs/Seq.bs.js : mij src-bs/Seq.ast
+o src/OSeq.ast : astj ../../src/OSeq.re
+o src/OSeq.d : deps src/OSeq.ast src/OSeq.iast
+o src/OSeq.iast : astj ../../src/OSeq.rei
+rule mi
+  command = /Users/mando/Github/oseq/node_modules/bs-platform/darwin/bsc.exe -I src -I src-bs   -warn-error +101 -bs-v $g_finger $i
+  dyndep = 1
+  restat = 1
+o src/OSeq.cmi : mi src/OSeq.iast
+rule mj
+  command = /Users/mando/Github/oseq/node_modules/bs-platform/darwin/bsc.exe -bs-read-cmi -I src -I src-bs   -warn-error +101 -bs-package-name reason-oseq -bs-package-output commonjs:$in_d:.bs.js -bs-v $g_finger $i
+  dyndep = 1
+  restat = 1
+o src/OSeq.cmj ../../src/OSeq.bs.js : mj src/OSeq.ast src/OSeq.cmi

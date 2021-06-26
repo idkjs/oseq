@@ -1,0 +1,91 @@
+#Start(1624739606253)
+
+  Warning number 44
+  /Users/mando/Github/oseq/src/OSeq.re:1590:3-8
+  
+  1588 │ 
+  1589 │ module Traverse = (M: MONAD) => {
+  1590 │   open M;
+  1591 │ 
+  1592 │   let map_m = (f, l) => {
+  
+  this open statement shadows the value identifier return (which is later used)
+  
+
+  Warning number 44
+  /Users/mando/Github/oseq/src/OSeq.re:1590:3-8
+  
+  1588 │ 
+  1589 │ module Traverse = (M: MONAD) => {
+  1590 │   open M;
+  1591 │ 
+  1592 │   let map_m = (f, l) => {
+  
+  this open statement shadows the value identifier >>= (which is later used)
+  
+
+  Warning number 44
+  /Users/mando/Github/oseq/__tests__/OSeqTests.re:4:15-60
+  
+  2 │ open OSeq;
+  3 │ 
+  4 │ let iterate = OSeq.(iterate(0, succ) |> take(10) |> to_list);
+  5 │ Js.log(iterate->Belt.List.toArray);
+  6 │ let toArray = Belt.List.toArray;
+  
+  this open statement shadows the value identifier iterate (which is later used)
+  
+
+  Warning number 44
+  /Users/mando/Github/oseq/__tests__/OSeqTests.re:4:15-60
+  
+  2 │ open OSeq;
+  3 │ 
+  4 │ let iterate = OSeq.(iterate(0, succ) |> take(10) |> to_list);
+  5 │ Js.log(iterate->Belt.List.toArray);
+  6 │ let toArray = Belt.List.toArray;
+  
+  this open statement shadows the value identifier take (which is later used)
+  
+
+  Warning number 44
+  /Users/mando/Github/oseq/__tests__/OSeqTests.re:4:15-60
+  
+  2 │ open OSeq;
+  3 │ 
+  4 │ let iterate = OSeq.(iterate(0, succ) |> take(10) |> to_list);
+  5 │ Js.log(iterate->Belt.List.toArray);
+  6 │ let toArray = Belt.List.toArray;
+  
+  this open statement shadows the value identifier to_list (which is later used)
+  
+
+  Warning number 44
+  /Users/mando/Github/oseq/__tests__/OSeqTests.re:8:18-12:3
+  
+   6 │ let toArray = Belt.List.toArray;
+   7 │ {
+   8 │   let naturals = {
+   9 │     open OSeq.Generator;
+  10 │     let rec aux = n => yield(n) >>= (() => aux(n + 1));
+  11 │     run(aux(0));
+  12 │   };
+  13 │ 
+  14 │   let naturals' = OSeq.unfold(n => Some((n, n + 1)), 0);
+  
+  this open statement shadows the value identifier >>= (which is later used)
+  
+
+  We've found a bug for you!
+  /Users/mando/Github/oseq/__tests__/OSeqTests.re:61:11-16
+  
+  59 ┆   };
+  60 ┆   let l = of_gen(g);
+  61 ┆   expect([11, 12], drop(10, l))|> toEqual(take(2) |> to_list);
+  62 ┆   // expect(([11, 12], drop(10, l))) |> toEqual(take(2) |> to_list);
+  63 ┆ })
+  
+  This function has type 'a => Jest.Expect.plainPartial('a)
+  It only accepts 1 argument; here, it's called with more.
+  
+#Done(1624739606388)

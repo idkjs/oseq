@@ -1,0 +1,25 @@
+{
+  "name": "reason-oseq",
+  "version": "0.3.0",
+  "sources": [{
+    "dir" : "src",
+    "files" : [
+      "OSeq.rei",
+      "OSeq.re"
+    ]
+  }, {
+    "dir" : "src-bs"
+  }, {
+    "dir": "__tests__",
+    "type": "dev"
+  }],
+  "package-specs": {
+    "module": "commonjs",
+    "in-source": true
+  },
+  "bs-dev-dependencies": ["@glennsl/bs-jest"],
+  "suffix": ".bs.js",
+  "warnings": {
+    "error" : "+101"
+  }
+}
