@@ -140,6 +140,8 @@ let mapi = (f, l) => {
 
 /*$T
     mapi (fun i x -> i,x) (1 -- 3) |> to_list = [0, 1; 1, 2; 2, 3]
+
+    mapi((i, x) => (i, x), 1 -- 3) |> to_list == [(0, 1), (1, 2), (2, 3)];
   */
 
 let rec filter_map = (f, l: t('a), ()) =>
@@ -189,6 +191,8 @@ let iterate = (x, f) => {
 
 /*$T iterate
     iterate 0 ((+)1) |> take 5 |> to_list = [0;1;2;3;4]
+
+    iterate(0, (+)(1)) |> take(5) |> to_list;
   */
 
 let rec fold = (f, acc, l) =>
@@ -201,6 +205,8 @@ let fold_left = fold;
 
 /*$T foldi
   (foldi (fun i acc x ->(i,x)::acc) [] (of_list ["a"; "b"])) = [1,"b";0,"a"]
+
+  foldi((i, acc, x) => [(i, x), ...acc], [], of_list(["a", "b"]));
   */
 let foldi = (f, acc, l) => {
   let rec foldi = (f, i, acc, l) =>
