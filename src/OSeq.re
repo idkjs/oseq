@@ -40,29 +40,29 @@ let is_empty = l =>
   | Cons(_) => false
   };
 
-let return = (x, ()) => [@implicit_arity] Cons(x, empty);
+let return = (x, ()) =>  Cons(x, empty);
 
-let cons = (a, b, ()) => [@implicit_arity] Cons(a, b);
+let cons = (a, b, ()) =>  Cons(a, b);
 
 let head_exn = g =>
   switch (g()) {
-  | [@implicit_arity] Cons(x, _) => x
+  |  Cons(x, _) => x
   | Nil => invalid_arg("OSeq.head_exn")
   };
 
 let tail_exn = (g): t(_) =>
   switch (g()) {
-  | [@implicit_arity] Cons(_, l) => l
+  |  Cons(_, l) => l
   | Nil => invalid_arg("OSeq.tail_exn")
   };
 
 let rec (--) = (i, j, ()) =>
   if (i == j) {
-    [@implicit_arity] Cons(i, empty);
+     Cons(i, empty);
   } else if (i < j) {
-    [@implicit_arity] Cons(i, i + 1 -- j);
+     Cons(i, i + 1 -- j);
   } else {
-    [@implicit_arity] Cons(i, i - 1 -- j);
+     Cons(i, i - 1 -- j);
   };
 
 /*$= & ~printer:pilist
@@ -90,21 +90,21 @@ let (--^) = (i, j) =>
 let rec map = (f, l, ()) =>
   switch (l()) {
   | Nil => Nil
-  | [@implicit_arity] Cons(x, tail) =>
-    [@implicit_arity] Cons(f(x), map(f, tail))
+  |  Cons(x, tail) =>
+     Cons(f(x), map(f, tail))
   };
 
 let rec fold_map = (f, acc, l, ()) =>
   switch (l()) {
   | Nil => Nil
-  | [@implicit_arity] Cons(x, tl) =>
+  |  Cons(x, tl) =>
     let acc = f(acc, x);
-    [@implicit_arity] Cons(acc, fold_map(f, acc, tl));
+     Cons(acc, fold_map(f, acc, tl));
   };
 
-let rec repeatedly = (f, ()) => [@implicit_arity] Cons(f(), repeatedly(f));
+let rec repeatedly = (f, ()) =>  Cons(f(), repeatedly(f));
 
-let rec repeat = (x, ()) => [@implicit_arity] Cons(x, repeat(x));
+let rec repeat = (x, ()) =>  Cons(x, repeat(x));
 
 /*$T
     repeat 0 |> take 4 |> to_list = [0;0;0;0]
@@ -117,7 +117,7 @@ let init = (~n=max_int, f) => {
       Nil;
     } else {
       let x = f(r);
-      [@implicit_arity] Cons(x, aux(r + 1));
+       Cons(x, aux(r + 1));
     };
 
   aux(0);
@@ -131,8 +131,8 @@ let mapi = (f, l) => {
   let rec aux = (f, l, i, ()) =>
     switch (l()) {
     | Nil => Nil
-    | [@implicit_arity] Cons(x, tl) =>
-      [@implicit_arity] Cons(f(i, x), aux(f, tl, i + 1))
+    |  Cons(x, tl) =>
+       Cons(f(i, x), aux(f, tl, i + 1))
     };
 
   aux(f, l, 0);
@@ -145,10 +145,10 @@ let mapi = (f, l) => {
 let rec filter_map = (f, l: t('a), ()) =>
   switch (l()) {
   | Nil => Nil
-  | [@implicit_arity] Cons(x, l') =>
+  |  Cons(x, l') =>
     switch (f(x)) {
     | None => filter_map(f, l', ())
-    | Some(y) => [@implicit_arity] Cons(y, filter_map(f, l'))
+    | Some(y) =>  Cons(y, filter_map(f, l'))
     }
   };
 
@@ -161,9 +161,9 @@ let filter = (f, l) => {
   let rec aux = (f, l, ()) =>
     switch (l()) {
     | Nil => Nil
-    | [@implicit_arity] Cons(x, tl) when f(x) =>
-      [@implicit_arity] Cons(x, aux(f, tl))
-    | [@implicit_arity] Cons(_, tl) => aux(f, tl, ())
+    |  Cons(x, tl) when f(x) =>
+       Cons(x, aux(f, tl))
+    |  Cons(_, tl) => aux(f, tl, ())
     };
 
   aux(f, l);
@@ -172,8 +172,8 @@ let filter = (f, l) => {
 let rec append = (a, b, ()) =>
   switch (a()) {
   | Nil => b()
-  | [@implicit_arity] Cons(x, tl) =>
-    [@implicit_arity] Cons(x, append(tl, b))
+  |  Cons(x, tl) =>
+     Cons(x, append(tl, b))
   };
 
 let rec cycle = (l, ()) => append(l, cycle(l), ());
@@ -181,7 +181,7 @@ let rec cycle = (l, ()) => append(l, cycle(l), ());
 let iterate = (x, f) => {
   let rec aux = (f, x, ()) => {
     let y = f(x);
-    [@implicit_arity] Cons(x, aux(f, y));
+     Cons(x, aux(f, y));
   };
 
   aux(f, x);
@@ -194,7 +194,7 @@ let iterate = (x, f) => {
 let rec fold = (f, acc, l) =>
   switch (l()) {
   | Nil => acc
-  | [@implicit_arity] Cons(x, tl) => fold(f, f(acc, x), tl)
+  |  Cons(x, tl) => fold(f, f(acc, x), tl)
   };
 
 let fold_left = fold;
@@ -206,7 +206,7 @@ let foldi = (f, acc, l) => {
   let rec foldi = (f, i, acc, l) =>
     switch (l()) {
     | Nil => acc
-    | [@implicit_arity] Cons(x, tl) => foldi(f, succ(i), f(i, acc, x), tl)
+    |  Cons(x, tl) => foldi(f, succ(i), f(i, acc, x), tl)
     };
 
   foldi(f, 0, acc, l);
@@ -215,13 +215,13 @@ let foldi = (f, acc, l) => {
 let reduce = (f, g) =>
   switch (g()) {
   | Nil => invalid_arg("reduce")
-  | [@implicit_arity] Cons(x, tl) => fold(f, x, tl)
+  |  Cons(x, tl) => fold(f, x, tl)
   };
 
 let rec iter = (f, l) =>
   switch (l()) {
   | Nil => ()
-  | [@implicit_arity] Cons(x, l') =>
+  |  Cons(x, l') =>
     f(x);
     iter(f, l');
   };
@@ -230,7 +230,7 @@ let iteri = (f, l) => {
   let rec aux = (f, l, i) =>
     switch (l()) {
     | Nil => ()
-    | [@implicit_arity] Cons(x, l') =>
+    |  Cons(x, l') =>
       f(i, x);
       aux(f, l', i + 1);
     };
@@ -248,7 +248,7 @@ let length = l => fold((acc, _) => acc + 1, 0, l);
 let rec unfold = (f, acc, ()) =>
   switch (f(acc)) {
   | None => Nil
-  | Some((x, acc')) => [@implicit_arity] Cons(x, unfold(f, acc'))
+  | Some((x, acc')) =>  Cons(x, unfold(f, acc'))
   };
 
 /*$T
@@ -259,13 +259,13 @@ let rec unfold = (f, acc, ()) =>
 let rec flat_map = (f, l, ()) =>
   switch (l()) {
   | Nil => Nil
-  | [@implicit_arity] Cons(x, tl) => fm_app_(f, f(x), tl, ())
+  |  Cons(x, tl) => fm_app_(f, f(x), tl, ())
   }
 and fm_app_ = (f, l, l', ()) =>
   switch (l()) {
   | Nil => flat_map(f, l', ())
-  | [@implicit_arity] Cons(x, tl) =>
-    [@implicit_arity] Cons(x, fm_app_(f, tl, l'))
+  |  Cons(x, tl) =>
+     Cons(x, fm_app_(f, tl, l'))
   };
 
 /*$Q
@@ -281,10 +281,10 @@ let take_nth = (n, g) => {
   let rec aux = (i, g, ()) =>
     switch (g()) {
     | Nil => Nil
-    | [@implicit_arity] Cons(_, tl) when i > 0 => aux(i - 1, tl, ())
-    | [@implicit_arity] Cons(x, tl) =>
+    |  Cons(_, tl) when i > 0 => aux(i - 1, tl, ())
+    |  Cons(x, tl) =>
       assert(i == 0);
-      [@implicit_arity] Cons(x, aux(n - 1, tl));
+       Cons(x, aux(n - 1, tl));
     };
   aux(0, g);
 };
@@ -292,8 +292,8 @@ let take_nth = (n, g) => {
 let rec nth = (i, l) =>
   switch (l()) {
   | Nil => raise(Not_found)
-  | [@implicit_arity] Cons(x, _) when i == 0 => x
-  | [@implicit_arity] Cons(_, tl) => nth(i - 1, tl)
+  |  Cons(x, _) when i == 0 => x
+  |  Cons(_, tl) => nth(i - 1, tl)
   };
 
 /*$= nth & ~printer:string_of_int
@@ -309,7 +309,7 @@ let mem = (~eq, x, gen) => {
   let rec mem = (eq, x, gen) =>
     switch (gen()) {
     | Nil => false
-    | [@implicit_arity] Cons(y, tl) => eq(x, y) || mem(eq, x, tl)
+    |  Cons(y, tl) => eq(x, y) || mem(eq, x, tl)
     };
   mem(eq, x, gen);
 };
@@ -317,18 +317,18 @@ let mem = (~eq, x, gen) => {
 let rec for_all = (p, gen) =>
   switch (gen()) {
   | Nil => true
-  | [@implicit_arity] Cons(x, tl) => p(x) && for_all(p, tl)
+  |  Cons(x, tl) => p(x) && for_all(p, tl)
   };
 
 let rec exists = (p, gen) =>
   switch (gen()) {
   | Nil => false
-  | [@implicit_arity] Cons(x, tl) => p(x) || exists(p, tl)
+  |  Cons(x, tl) => p(x) || exists(p, tl)
   };
 
 let min = (~lt, gen) =>
   switch (gen()) {
-  | [@implicit_arity] Cons(x, tl) =>
+  |  Cons(x, tl) =>
     fold(
       (min, x) =>
         if (lt(x, min)) {
@@ -349,7 +349,7 @@ let min = (~lt, gen) =>
 
 let max = (~lt, gen) =>
   switch (gen()) {
-  | [@implicit_arity] Cons(x, tl) =>
+  |  Cons(x, tl) =>
     fold(
       (max, x) =>
         if (lt(max, x)) {
@@ -372,7 +372,7 @@ let equal = (~eq, gen1, gen2) => {
   let rec check = (gen1, gen2) =>
     switch (gen1(), gen2()) {
     | (Nil, Nil) => true
-    | ([@implicit_arity] Cons(x1, tl1), [@implicit_arity] Cons(x2, tl2))
+    | ( Cons(x1, tl1),  Cons(x2, tl2))
         when eq(x1, x2) =>
       check(tl1, tl2)
     | _ => false
@@ -399,8 +399,8 @@ let zip_index = gen => {
   let rec aux = (r, gen, ()) =>
     switch (gen()) {
     | Nil => Nil
-    | [@implicit_arity] Cons(x, tl) =>
-      [@implicit_arity] Cons((r, x), aux(r + 1, tl))
+    |  Cons(x, tl) =>
+       Cons((r, x), aux(r + 1, tl))
     };
 
   aux(0, gen);
@@ -414,15 +414,15 @@ let rec map2 = (f, l1, l2, ()) =>
   switch (l1(), l2()) {
   | (Nil, _)
   | (_, Nil) => Nil
-  | ([@implicit_arity] Cons(x1, l1'), [@implicit_arity] Cons(x2, l2')) =>
-    [@implicit_arity] Cons(f(x1, x2), map2(f, l1', l2'))
+  | ( Cons(x1, l1'),  Cons(x2, l2')) =>
+     Cons(f(x1, x2), map2(f, l1', l2'))
   };
 
 let rec fold2 = (f, acc, l1, l2) =>
   switch (l1(), l2()) {
   | (Nil, _)
   | (_, Nil) => acc
-  | ([@implicit_arity] Cons(x1, l1'), [@implicit_arity] Cons(x2, l2')) =>
+  | ( Cons(x1, l1'),  Cons(x2, l2')) =>
     fold2(f, f(acc, x1, x2), l1', l2')
   };
 
@@ -430,7 +430,7 @@ let rec iter2 = (f, l1, l2) =>
   switch (l1(), l2()) {
   | (Nil, _)
   | (_, Nil) => ()
-  | ([@implicit_arity] Cons(x1, l1'), [@implicit_arity] Cons(x2, l2')) =>
+  | ( Cons(x1, l1'),  Cons(x2, l2')) =>
     f(x1, x2);
     iter2(f, l1', l2');
   };
@@ -439,7 +439,7 @@ let rec for_all2 = (f, l1, l2) =>
   switch (l1(), l2()) {
   | (Nil, _)
   | (_, Nil) => true
-  | ([@implicit_arity] Cons(x1, l1'), [@implicit_arity] Cons(x2, l2')) =>
+  | ( Cons(x1, l1'),  Cons(x2, l2')) =>
     f(x1, x2) && for_all2(f, l1', l2')
   };
 
@@ -447,7 +447,7 @@ let rec exists2 = (f, l1, l2) =>
   switch (l1(), l2()) {
   | (Nil, _)
   | (_, Nil) => false
-  | ([@implicit_arity] Cons(x1, l1'), [@implicit_arity] Cons(x2, l2')) =>
+  | ( Cons(x1, l1'),  Cons(x2, l2')) =>
     f(x1, x2) || exists2(f, l1', l2')
   };
 
@@ -455,22 +455,22 @@ let rec zip = (a, b, ()) =>
   switch (a(), b()) {
   | (Nil, _)
   | (_, Nil) => Nil
-  | ([@implicit_arity] Cons(x, a'), [@implicit_arity] Cons(y, b')) =>
-    [@implicit_arity] Cons((x, y), zip(a', b'))
+  | ( Cons(x, a'),  Cons(y, b')) =>
+     Cons((x, y), zip(a', b'))
   };
 
 let unzip = l => {
   let rec first = (l, ()) =>
     switch (l()) {
     | Nil => Nil
-    | [@implicit_arity] Cons((x, _), tl) =>
-      [@implicit_arity] Cons(x, first(tl))
+    |  Cons((x, _), tl) =>
+       Cons(x, first(tl))
     }
   and second = (l, ()) =>
     switch (l()) {
     | Nil => Nil
-    | [@implicit_arity] Cons((_, y), tl) =>
-      [@implicit_arity] Cons(y, second(tl))
+    |  Cons((_, y), tl) =>
+       Cons(y, second(tl))
     };
 
   (first(l), second(l));
@@ -485,7 +485,7 @@ let compare = (~cmp, gen1, gen2): int => {
   let rec aux = (gen1, gen2) =>
     switch (gen1(), gen2()) {
     | (Nil, Nil) => 0
-    | ([@implicit_arity] Cons(x1, tl1), [@implicit_arity] Cons(x2, tl2)) =>
+    | ( Cons(x1, tl1),  Cons(x2, tl2)) =>
       let c = cmp(x1, x2);
       if (c != 0) {
         c;
@@ -507,8 +507,8 @@ let compare = (~cmp, gen1, gen2): int => {
 let rec find = (p, e) =>
   switch (e()) {
   | Nil => None
-  | [@implicit_arity] Cons(x, _) when p(x) => Some(x)
-  | [@implicit_arity] Cons(_, tl) => find(p, tl)
+  |  Cons(x, _) when p(x) => Some(x)
+  |  Cons(_, tl) => find(p, tl)
   };
 
 /*$T
@@ -519,7 +519,7 @@ let rec find = (p, e) =>
 let rec find_map = (f, e) =>
   switch (e()) {
   | Nil => None
-  | [@implicit_arity] Cons(x, tl) =>
+  |  Cons(x, tl) =>
     switch (f(x)) {
     | None => find_map(f, tl)
     | Some(_) as res => res
@@ -543,14 +543,14 @@ let sum = e => fold((+), 0, e);
 let rec interleave = (a, b, ()) =>
   switch (a()) {
   | Nil => b()
-  | [@implicit_arity] Cons(x, tail) =>
-    [@implicit_arity] Cons(x, interleave(b, tail))
+  |  Cons(x, tail) =>
+     Cons(x, interleave(b, tail))
   };
 
 let rec flat_map_interleave = (f, a, ()) =>
   switch (a()) {
   | Nil => Nil
-  | [@implicit_arity] Cons(x, tail) =>
+  |  Cons(x, tail) =>
     let y = f(x);
     interleave(y, flat_map_interleave(f, tail), ());
   };
@@ -558,20 +558,20 @@ let rec flat_map_interleave = (f, a, ()) =>
 let rec app_interleave = (f, a, ()) =>
   switch (f()) {
   | Nil => Nil
-  | [@implicit_arity] Cons(f1, fs) =>
+  |  Cons(f1, fs) =>
     interleave(map(f1, a), app_interleave(fs, a), ())
   };
 
 let rec flatten = (l, ()) =>
   switch (l()) {
   | Nil => Nil
-  | [@implicit_arity] Cons(x, tl) => flat_app_(x, tl, ())
+  |  Cons(x, tl) => flat_app_(x, tl, ())
   }
 and flat_app_ = (l, l', ()) =>
   switch (l()) {
   | Nil => flatten(l', ())
-  | [@implicit_arity] Cons(x, tl) =>
-    [@implicit_arity] Cons(x, flat_app_(tl, l'))
+  |  Cons(x, tl) =>
+     Cons(x, flat_app_(tl, l'))
   };
 
 let rec take = (n, l: t('a), ()) =>
@@ -580,17 +580,17 @@ let rec take = (n, l: t('a), ()) =>
   } else {
     switch (l()) {
     | Nil => Nil
-    | [@implicit_arity] Cons(x, l') =>
-      [@implicit_arity] Cons(x, take(n - 1, l'))
+    |  Cons(x, l') =>
+       Cons(x, take(n - 1, l'))
     };
   };
 
 let rec take_while = (p, l, ()) =>
   switch (l()) {
   | Nil => Nil
-  | [@implicit_arity] Cons(x, l') =>
+  |  Cons(x, l') =>
     if (p(x)) {
-      [@implicit_arity] Cons(x, take_while(p, l'));
+       Cons(x, take_while(p, l'));
     } else {
       Nil;
     }
@@ -604,13 +604,13 @@ let rec drop = (n, l: t('a), ()) =>
   switch (l()) {
   | l' when n == 0 => l'
   | Nil => Nil
-  | [@implicit_arity] Cons(_, l') => drop(n - 1, l', ())
+  |  Cons(_, l') => drop(n - 1, l', ())
   };
 
 let rec drop_while = (p, l, ()) =>
   switch (l()) {
   | Nil => Nil
-  | [@implicit_arity] Cons(x, l') when p(x) => drop_while(p, l', ())
+  |  Cons(x, l') when p(x) => drop_while(p, l', ())
   | Cons(_) as res => res
   };
 
@@ -623,7 +623,7 @@ let rec drop_while = (p, l, ()) =>
 let rec fold_while = (f, acc, gen) =>
   switch (gen()) {
   | Nil => acc
-  | [@implicit_arity] Cons(x, tl) =>
+  |  Cons(x, tl) =>
     let (acc, cont) = f(acc, x);
     switch (cont) {
     | `Stop => acc
@@ -639,10 +639,10 @@ let rec fold_while = (f, acc, gen) =>
 let scan = (f, acc, g): t(_) => {
   let rec aux = (f, acc, g, ()) =>
     switch (g()) {
-    | Nil => [@implicit_arity] Cons(acc, empty)
-    | [@implicit_arity] Cons(x, tl) =>
+    | Nil =>  Cons(acc, empty)
+    |  Cons(x, tl) =>
       let acc' = f(acc, x);
-      [@implicit_arity] Cons(acc, aux(f, acc', tl));
+       Cons(acc, aux(f, acc', tl));
     };
 
   aux(f, acc, g);
@@ -657,9 +657,9 @@ let unfold_scan = (f, acc, g) => {
   let rec aux = (f, acc, g, ()) =>
     switch (g()) {
     | Nil => Nil
-    | [@implicit_arity] Cons(x, tl) =>
+    |  Cons(x, tl) =>
       let (acc, res) = f(acc, x);
-      [@implicit_arity] Cons(res, aux(f, acc, tl));
+       Cons(res, aux(f, acc, tl));
     };
 
   aux(f, acc, g);
@@ -674,14 +674,14 @@ let product_with = (f, l1, l2) => {
   let rec next_left = (l1, l2, ()) =>
     switch (l1()) {
     | Nil => Nil
-    | [@implicit_arity] Cons(x1, tl1) =>
+    |  Cons(x1, tl1) =>
       append_all(~tl1, ~l2_init=l2, x1, l2, ())
     }
   and append_all = (~tl1, ~l2_init, x1, l2, ()) =>
     switch (l2()) {
     | Nil => next_left(tl1, l2_init, ())
-    | [@implicit_arity] Cons(x2, tl2) =>
-      [@implicit_arity] Cons(f(x1, x2), append_all(~tl1, ~l2_init, x1, tl2))
+    |  Cons(x2, tl2) =>
+       Cons(f(x1, x2), append_all(~tl1, ~l2_init, x1, tl2))
     };
 
   next_left(l1, l2);
@@ -752,8 +752,8 @@ let product7 = (l1, l2, l3, l4, l5, l6, l7) =>
 
 let rec cartesian_product = (l, ()) =>
   switch (l()) {
-  | Nil => [@implicit_arity] Cons([], empty)
-  | [@implicit_arity] Cons(l1, tail) =>
+  | Nil =>  Cons([], empty)
+  |  Cons(l1, tail) =>
     let tail = cartesian_product(tail);
     product_with((x, tl) => [x, ...tl], l1, tail, ());
   };
@@ -782,8 +782,8 @@ let map_product_l = (f, l) => {
 let rec group = (~eq, l, ()) =>
   switch (l()) {
   | Nil => Nil
-  | [@implicit_arity] Cons(x, l') =>
-    [@implicit_arity]
+  |  Cons(x, l') =>
+
     Cons(
       cons(x, take_while(eq(x), l')),
       group(~eq, drop_while(eq(x), l')),
@@ -803,13 +803,13 @@ let rec group = (~eq, l, ()) =>
 let rec uniq_rec_ = (eq, prev, l, ()) =>
   switch (prev, l()) {
   | (_, Nil) => Nil
-  | (None, [@implicit_arity] Cons(x, l')) =>
-    [@implicit_arity] Cons(x, uniq_rec_(eq, Some(x), l'))
-  | (Some(y), [@implicit_arity] Cons(x, l')) =>
+  | (None,  Cons(x, l')) =>
+     Cons(x, uniq_rec_(eq, Some(x), l'))
+  | (Some(y),  Cons(x, l')) =>
     if (eq(x, y)) {
       uniq_rec_(eq, prev, l', ());
     } else {
-      [@implicit_arity] Cons(x, uniq_rec_(eq, Some(x), l'));
+       Cons(x, uniq_rec_(eq, Some(x), l'));
     }
   };
 
@@ -819,7 +819,7 @@ let chunks = (n, e) => {
   let rec aux = (e, ()) =>
     switch (e()) {
     | Nil => Nil
-    | [@implicit_arity] Cons(x, tl) =>
+    |  Cons(x, tl) =>
       let a = Array.make(n, x);
       fill(a, 1, tl);
     }
@@ -827,11 +827,11 @@ let chunks = (n, e) => {
   and fill = (a, i, e) =>
     /* fill the array. [i]: current index to fill */
     if (i == n) {
-      [@implicit_arity] Cons(a, aux(e));
+       Cons(a, aux(e));
     } else {
       switch (e()) {
-      | Nil => [@implicit_arity] Cons(Array.sub(a, 0, i), empty) /* last array is not full */
-      | [@implicit_arity] Cons(x, tl) =>
+      | Nil =>  Cons(Array.sub(a, 0, i), empty) /* last array is not full */
+      |  Cons(x, tl) =>
         a[i] = x;
         fill(a, i + 1, tl);
       };
@@ -850,15 +850,15 @@ let intersperse = (x, g) => {
   let rec aux_with_sep = (g, ()) =>
     switch (g()) {
     | Nil => Nil
-    | [@implicit_arity] Cons(y, g') =>
-      [@implicit_arity] Cons(x, cons(y, aux_with_sep(g')))
+    |  Cons(y, g') =>
+       Cons(x, cons(y, aux_with_sep(g')))
     };
 
   () =>
     switch (g()) {
     | Nil => Nil
-    | [@implicit_arity] Cons(x, g) =>
-      [@implicit_arity] Cons(x, aux_with_sep(g))
+    |  Cons(x, g) =>
+       Cons(x, aux_with_sep(g))
     };
 };
 
@@ -923,7 +923,7 @@ let merge = (gens): t(_) => {
       | (Merge_start(gens), q') =>
         switch (gens()) {
         | Nil => next(q', ())
-        | [@implicit_arity] Cons(g, gens') =>
+        |  Cons(g, gens') =>
           let q' = F_queue.push(Merge_start(gens'), q');
           yield_from(g, q');
         }
@@ -932,8 +932,8 @@ let merge = (gens): t(_) => {
   and yield_from = (g, q) =>
     switch (g()) {
     | Nil => next(q, ())
-    | [@implicit_arity] Cons(x, g') =>
-      [@implicit_arity] Cons(x, next(F_queue.push(Merge_from(g'), q)))
+    |  Cons(x, g') =>
+       Cons(x, next(F_queue.push(Merge_from(g'), q)))
     };
 
   let q = F_queue.push(Merge_start(gens), F_queue.empty);
@@ -963,11 +963,11 @@ let merge = (gens): t(_) => {
 let intersection = (~cmp, gen1, gen2): t(_) => {
   let rec next = (x1, x2, ()) =>
     switch (x1, x2) {
-    | ([@implicit_arity] Cons(y1, tl1), [@implicit_arity] Cons(y2, tl2)) =>
+    | ( Cons(y1, tl1),  Cons(y2, tl2)) =>
       let c = cmp(y1, y2);
       if (c == 0) {
         /* equal elements, yield! */
-        [@implicit_arity] Cons(y1, () => next(tl1(), tl2(), ()));
+         Cons(y1, () => next(tl1(), tl2(), ()));
       } else if (c < 0) {
         /* drop y1 */
         next(tl1(), x2, ());
@@ -988,8 +988,8 @@ let intersection = (~cmp, gen1, gen2): t(_) => {
 
 let rec zip_with = (f, a, b, ()) =>
   switch (a(), b()) {
-  | ([@implicit_arity] Cons(xa, tla), [@implicit_arity] Cons(xb, tlb)) =>
-    [@implicit_arity] Cons(f(xa, xb), zip_with(f, tla, tlb))
+  | ( Cons(xa, tla),  Cons(xb, tlb)) =>
+     Cons(f(xa, xb), zip_with(f, tla, tlb))
   | _ => Nil
   };
 
@@ -1008,11 +1008,11 @@ let sorted_merge = (~cmp, gen1, gen2): t(_) => {
   let rec next = (x1, x2, ()) =>
     switch (x1, x2) {
     | (Nil, Nil) => Nil
-    | ([@implicit_arity] Cons(y1, tl1), [@implicit_arity] Cons(y2, tl2)) =>
+    | ( Cons(y1, tl1),  Cons(y2, tl2)) =>
       if (cmp(y1, y2) <= 0) {
-        [@implicit_arity] Cons(y1, next(tl1(), x2));
+         Cons(y1, next(tl1(), x2));
       } else {
-        [@implicit_arity] Cons(y2, next(x1, tl2()));
+         Cons(y2, next(x1, tl2()));
       }
     | (Cons(_), Nil) => x1
     | (Nil, Cons(_)) => x2
@@ -1102,9 +1102,9 @@ let combinations = (n, g) => {
   assert(n >= 0);
   let rec make_state = (n, l, ()) =>
     switch (n, l()) {
-    | (0, _) => [@implicit_arity] Cons([], empty)
+    | (0, _) =>  Cons([], empty)
     | (_, Nil) => Nil
-    | (_, [@implicit_arity] Cons(x, tail)) =>
+    | (_,  Cons(x, tail)) =>
       let m1 = make_state(n - 1, tail);
       let m2 = make_state(n, tail);
       add(x, m1, m2, ());
@@ -1112,8 +1112,8 @@ let combinations = (n, g) => {
   and add = (x, m1, m2, ()) =>
     switch (m1()) {
     | Nil => m2()
-    | [@implicit_arity] Cons(l, m1') =>
-      [@implicit_arity] Cons([x, ...l], add(x, m1', m2))
+    |  Cons(l, m1') =>
+       Cons([x, ...l], add(x, m1', m2))
     };
 
   make_state(n, g);
@@ -1130,7 +1130,7 @@ let combinations = (n, g) => {
 let power_set = (g): t(_) => {
   let rec make_state = (l, ()) =>
     switch (l) {
-    | [] => [@implicit_arity] Cons([], empty)
+    | [] =>  Cons([], empty)
     | [x, ...tail] =>
       let m = make_state(tail);
       add(x, m, ());
@@ -1138,8 +1138,8 @@ let power_set = (g): t(_) => {
   and add = (x, m, ()) =>
     switch (m()) {
     | Nil => Nil
-    | [@implicit_arity] Cons(l, m') =>
-      [@implicit_arity] Cons([x, ...l], cons(l, add(x, m')))
+    |  Cons(l, m') =>
+       Cons([x, ...l], cons(l, add(x, m')))
     };
 
   let l = fold((acc, x) => [x, ...acc], [], g);
@@ -1160,7 +1160,7 @@ let power_set = (g): t(_) => {
 let rec to_rev_list_rec_ = (acc, l) =>
   switch (l()) {
   | Nil => acc
-  | [@implicit_arity] Cons(x, l') => to_rev_list_rec_([x, ...acc], l')
+  |  Cons(x, l') => to_rev_list_rec_([x, ...acc], l')
   };
 
 let to_rev_list = l => to_rev_list_rec_([], l);
@@ -1170,7 +1170,7 @@ let to_list = l => {
     switch (l()) {
     | Nil => []
     | _ when i == 0 => List.rev(to_rev_list_rec_([], l))
-    | [@implicit_arity] Cons(x, f) => [x, ...direct(i - 1, f)]
+    |  Cons(x, f) => [x, ...direct(i - 1, f)]
     };
 
   direct(200, l);
@@ -1180,7 +1180,7 @@ let of_list = l => {
   let rec aux = (l, ()) =>
     switch (l) {
     | [] => Nil
-    | [x, ...l'] => [@implicit_arity] Cons(x, aux(l'))
+    | [x, ...l'] =>  Cons(x, aux(l'))
     };
   aux(l);
 };
@@ -1195,7 +1195,7 @@ let of_array = (~start=0, ~len=?, a) => {
     if (i == len) {
       Nil;
     } else {
-      [@implicit_arity] Cons(a[i], aux(a, i + 1));
+       Cons(a[i], aux(a, i + 1));
     };
 
   aux(a, start);
@@ -1204,7 +1204,7 @@ let of_array = (~start=0, ~len=?, a) => {
 let to_array = l =>
   switch (l()) {
   | Nil => [||]
-  | [@implicit_arity] Cons(x, _) =>
+  |  Cons(x, _) =>
     let n = length(l);
     let a = Array.make(n, x); /* need first elem to create [a] */
     iteri((i, x) => a[i] = x, l);
@@ -1235,7 +1235,7 @@ let of_string = (~start=0, ~len=?, s) => {
       Nil;
     } else {
       let x = s.[i];
-      [@implicit_arity] Cons(x, aux(i + 1));
+       Cons(x, aux(i + 1));
     };
 
   aux(0);
@@ -1259,7 +1259,7 @@ let to_string = s => {
 let concat_string = (~sep, s) =>
   switch (s()) {
   | Nil => ""
-  | [@implicit_arity] Cons(x, tl) =>
+  |  Cons(x, tl) =>
     let sep_len = String.length(sep);
     let len =
       fold(
@@ -1298,7 +1298,7 @@ let concat_string = (~sep, s) =>
 let rec to_iter = (res, k) =>
   switch (res()) {
   | Nil => ()
-  | [@implicit_arity] Cons(s, f) =>
+  |  Cons(s, f) =>
     k(s);
     to_iter(f, k);
   };
@@ -1308,7 +1308,7 @@ let to_gen = l => {
   () =>
     switch (l^()) {
     | Nil => None
-    | [@implicit_arity] Cons(x, l') =>
+    |  Cons(x, l') =>
       l := l';
       Some(x);
     };
@@ -1329,7 +1329,7 @@ let of_gen = g => {
         Nil;
       | Some(x) =>
         let tl = consume(ref(Of_gen_thunk(g)));
-        let l = [@implicit_arity] Cons(x, tl);
+        let l =  Cons(x, tl);
         r := Of_gen_saved(l);
         l;
       }
@@ -1349,7 +1349,7 @@ let of_gen = g => {
 let rec of_gen_transient = (f, ()) =>
   switch (f()) {
   | None => Nil
-  | Some(x) => [@implicit_arity] Cons(x, of_gen_transient(f))
+  | Some(x) =>  Cons(x, of_gen_transient(f))
   };
 
 let sort = (~cmp, l) => {
@@ -1372,13 +1372,13 @@ let lines = (g): t(_) => {
       } else {
         let s = Buffer.contents(buf);
         Buffer.clear(buf);
-        [@implicit_arity] Cons(s, empty);
+         Cons(s, empty);
       }
-    | [@implicit_arity] Cons(c, tl) =>
+    |  Cons(c, tl) =>
       if (c == '\n') {
         let s = Buffer.contents(buf);
         Buffer.clear(buf);
-        [@implicit_arity] Cons(s, aux(tl, buf));
+         Cons(s, aux(tl, buf));
       } else {
         Buffer.add_char(buf, c);
         aux(tl, buf, ());
@@ -1399,15 +1399,15 @@ let unlines = (g): t(_) => {
     | `Next =>
       switch (g()) {
       | Nil => Nil
-      | [@implicit_arity] Cons("", tl) =>
-        [@implicit_arity] Cons('\n', aux(tl, st)) /* empty line */
-      | [@implicit_arity] Cons(s, tl) =>
-        [@implicit_arity] Cons(s.[0], aux(tl, `Consume((s, 1))))
+      |  Cons("", tl) =>
+         Cons('\n', aux(tl, st)) /* empty line */
+      |  Cons(s, tl) =>
+         Cons(s.[0], aux(tl, `Consume((s, 1))))
       }
     | `Consume(s, i) when i == String.length(s) =>
-      [@implicit_arity] Cons('\n', aux(g, `Next))
+       Cons('\n', aux(g, `Next))
     | `Consume(s, i) =>
-      [@implicit_arity] Cons(s.[i], aux(g, `Consume((s, i + 1))))
+       Cons(s.[i], aux(g, `Consume((s, i + 1))))
     };
 
   aux(g, `Next);
@@ -1431,8 +1431,8 @@ let rec memoize = f => {
       let l =
         switch (f()) {
         | Nil => Nil
-        | [@implicit_arity] Cons(x, tail) =>
-          [@implicit_arity] Cons(x, memoize(tail))
+        |  Cons(x, tail) =>
+           Cons(x, memoize(tail))
         };
 
       r := MemoSave(l);
@@ -1451,7 +1451,7 @@ module Generator = {
 
   let yield = x => Yield(x);
 
-  let (>>=) = (x, f) => [@implicit_arity] Append(x, Delay(f));
+  let (>>=) = (x, f) =>  Append(x, Delay(f));
 
   let delay = f => Delay(f);
 
@@ -1460,9 +1460,9 @@ module Generator = {
       switch (l) {
       | [] => Nil
       | [Skip, ...tl] => aux(tl, ())
-      | [Yield(x), ...tl] => [@implicit_arity] Cons(x, aux(tl))
+      | [Yield(x), ...tl] =>  Cons(x, aux(tl))
       | [Delay(f), ...tl] => aux([f(), ...tl], ())
-      | [[@implicit_arity] Append(x1, x2), ...tl] =>
+      | [ Append(x1, x2), ...tl] =>
         aux([x1, x2, ...tl], ())
       };
 
@@ -1588,7 +1588,7 @@ module Traverse = (M: MONAD) => {
     let rec aux = (acc, l) =>
       switch (l()) {
       | Nil => return(of_list(List.rev(acc)))
-      | [@implicit_arity] Cons(x, l') =>
+      |  Cons(x, l') =>
         f(x) >>= (x' => aux([x', ...acc], l'))
       };
 
@@ -1600,7 +1600,7 @@ module Traverse = (M: MONAD) => {
   let rec fold_m = (f, acc, l) =>
     switch (l()) {
     | Nil => return(acc)
-    | [@implicit_arity] Cons(x, l') =>
+    |  Cons(x, l') =>
       f(acc, x) >>= (acc' => fold_m(f, acc', l'))
     };
 };
@@ -1609,7 +1609,7 @@ let pp = (~sep=",", pp_item, fmt, l) => {
   let rec pp = (fmt, l) =>
     switch (l()) {
     | Nil => ()
-    | [@implicit_arity] Cons(x, l') =>
+    |  Cons(x, l') =>
       Format.pp_print_string(fmt, sep);
       Format.pp_print_cut(fmt, ());
       pp_item(fmt, x);
@@ -1618,7 +1618,7 @@ let pp = (~sep=",", pp_item, fmt, l) => {
 
   switch (l()) {
   | Nil => ()
-  | [@implicit_arity] Cons(x, l') =>
+  |  Cons(x, l') =>
     pp_item(fmt, x);
     pp(fmt, l');
   };
